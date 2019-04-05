@@ -90,37 +90,35 @@ There might be some missing values in the data. Remove all the missing values fr
 
 ```{r}
 gaming_no_na <- gaming %>% drop_na()
-view(gaming_no_na)
 ```
 
 
 What are the columns in the data. What do you think the column `publisher` contain?
 
-WRITE YOUR ANSWER HERE!! - The publisher column contains the names of the companines who release the games.  
+WRITE YOUR ANSWER HERE!! -The columns in this dataset are (name,platform,year_of_release,genre,publisher,na_sales,eu_sales,jp_sales,other_sales,global_sales,critic_score,critic_count,user_score,user_count,developer,rating) The publisher column contains the names of the companines who publish the games.  
 
 The column `publisher` has values such as *Sony Computer Entertainment*, *Sony Computer Entertainment America*, *Sony Computer Entertainment Europe*, *Sony Music Entertainment* and *Sony Online Entertainment*. All those companies are subsidiaries of Sony. Use the appropriate dplyr functon to replace all those values with `Sony`.
 
 
 ```{r}
-gaming_no_na <- gaming_no_na %>% 
-    
-
+gaming_no_na <- gaming %>% mutate(publisher = ifelse(publisher %in% sony , "Sony", publisher)) 
+gaming_no_na
 ```
-
 What are the top 10 publishers by the number of games they produce?
 
 ```{r}
-gaming_no_na %>% 
-    
-
+gaming_no_na %>% group_by(publisher) %>% 
+  tally() %>% 
+  top_n(10)   
 ```
+The top 10 publishers based off number of game sales are Activision, Electronic Arts, Konami Digial Entertainment, Namaco Bandi Games, Nintendo, Sega, Sony Computer Entertainment,Take-Two Interactive, THQ, and Ubisoft 
 
 What are the top 10 publishers by the global sales?
 
 ```{r}
-gaming_no_na %>% 
-    
-
+gaming_no_na %>% group_by(publisher) %>% 
+  tally(global_sales) %>% 
+  top_n(10)   
 ```
 
 Create a horizontal bar plot using ggplot2 that on the Y axis shows the top 10 companies by overall global sales and on the X axis shows the total global sales. Which company sells the most globally?
