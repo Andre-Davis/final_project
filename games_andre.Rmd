@@ -78,7 +78,8 @@ Load the data into a data frame called `gaming`. Make sure you clean the column 
 
 ```{r}
 gaming <- read_csv("data/tidy_data/Video_Games_Sales_as_at_22_Dec_2016.csv") %>% 
-  clean_names()  
+  clean_names()
+gaming
 ```
 
 what are the columns in the data? How many observations are in the data? Write your code in the chunk below.
@@ -103,8 +104,9 @@ The column `publisher` has values such as *Sony Computer Entertainment*, *Sony C
 
 
 ```{r}
+sony <- c("Sony Computer Entertainment","Sony Computer Entertainment America","Sony Computer Entertainment Europe","Sony Music Entertainment","Sony Online Entertainment")
+
 gaming_no_na <- gaming %>% mutate(publisher = ifelse(publisher %in% sony , "Sony", publisher)) 
-gaming_no_na
 ```
 What are the top 10 publishers by the number of games they produce?
 
@@ -141,16 +143,20 @@ games_per_year<-gaming_no_na %>%
   group_by(year_of_release) %>% 
   summarize(game_per_year=n()) 
 
-ggplot(games_per_year,aes(x=year_of_release,y=game_per_year)) + geom_line()
+ggplot(games_per_year,aes(x=as.numeric(year_of_release),y=game_per_year)) + geom_line()
 
-saveRDS(games_per_year, "games_per_year.rds")
 ```
 
 
 Do the same graph above for the top 10 companies by global sales but group by the company.
 
 ```{r}
-ggplot(gaming_no_na,aes(x=global_sales,y=publisher,top_n(10))) + geom_line()
+games_per_year<-gaming_no_na %>% 
+  group_by(publisher,year_of_release) %>% 
+  summarize(game_per_year=n()) 
+
+ggplot(games_per_year,aes(x=as.numeric(year_of_release),y=game_per_year,group=as.numeric(year_of_release),color="random")) + geom_line()
+```
 
 ```
 
@@ -168,7 +174,11 @@ ggplot(world_sales, aes(x=genre, y=sales)) + geom_bar(stat="identity", fill="yel
 Do the bar plot above but group them by market (Japan, Europe, North America). Do you see any difference between regions?
 
 ```{r}
-ggplot(gaming_no_na,aes(x=global_sales,y=)) + geom_bar(stat="identity", fill="green")
+world_sales<-gaming_no_na %>% 
+  group_by() %>% 
+  summarize(sales=sum(global_sales)) 
+
+ggplot(world_sales, aes(x=, y=sales)) + geom_bar(stat="identity", fill="yellow")
 ```
 
 Read the lesson on inferential analysis. We are using linear regression to find what factors determine the sales of a computer game. Use global sales as the dependent variables (Y) and genre, rating, and platform. Make sure to use genre and platform as factors.
