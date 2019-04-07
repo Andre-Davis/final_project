@@ -118,24 +118,32 @@ The top 10 publishers based off number of game sales are Activision, Electronic 
 What are the top 10 publishers by the global sales? The top 10 publishers for global sales are Activision, Electronic Arts, Konmai Digitial Entertainment, Mirosoft Game Studios, Nintento,Sega,Sony,Take-Two Interactive,THQ and Ubisoft
 
 ```{r}
-gaming_no_na %>% group_by(publisher) %>% 
-  tally(global_sales) %>% 
-  top_n(10)   
+top_10<-gaming_no_na %>% 
+  group_by(publisher) %>% 
+  summarize(total_sales=sum(global_sales)) %>% 
+  arrange(-total_sales) %>%
+  slice(1:10)   
 ```
 
 Create a horizontal bar plot using ggplot2 that on the Y axis shows the top 10 companies by overall global sales and on the X axis shows the total global sales. Which company sells the most globally?
 
 ```{r}
-ggplot(gaming_no_na,aes(x="global_sales",y= "publisher",top_n(10))) + 
-  geom_bar(stat="identity",fill="blue")
-
+  
+ggplot(top_10,aes(x=reorder(publisher,total_sales),y=total_sales)) + 
+  geom_bar(stat="identity",fill="blue") + coord_flip()
 ```
 
 
 Use ggplot2 to create a line graph that shows the toal number of games released each year over time. Do you see any trend?
 
 ```{r}
-ggplot(gaming_no_na,aes(x=year_of_release,y=name)) + geom_line()
+games_per_year<-gaming_no_na %>% 
+  group_by(year_of_release) %>% 
+  summarize(game_per_year=n()) 
+
+ggplot(games_per_year,aes(x=year_of_release,y=game_per_year)) + geom_line()
+
+saveRDS(games_per_year, "games_per_year.rds")
 ```
 
 
@@ -150,7 +158,11 @@ ggplot(gaming_no_na,aes(x=global_sales,y=publisher,top_n(10))) + geom_line()
 How about a bar plot that shows the global sales by genres? Which genre sells the most (dollar value)?
 
 ```{r}
-ggplot(gaming_no_na, aes(x=global_sales, y=genre)) + geom_bar(stat="identity", fill="yellow")
+world_sales<-gaming_no_na %>% 
+  group_by(genre) %>% 
+  summarize(sales=sum(global_sales)) 
+
+ggplot(world_sales, aes(x=genre, y=sales)) + geom_bar(stat="identity", fill="yellow")
 ```
 
 Do the bar plot above but group them by market (Japan, Europe, North America). Do you see any difference between regions?
@@ -162,7 +174,9 @@ ggplot(gaming_no_na,aes(x=global_sales,y=)) + geom_bar(stat="identity", fill="gr
 Read the lesson on inferential analysis. We are using linear regression to find what factors determine the sales of a computer game. Use global sales as the dependent variables (Y) and genre, rating, and platform. Make sure to use genre and platform as factors.
 
 ```{r}
-
+ggplot(gaming_no_na,aes(x=global_sales,y=))+ geom_smooth(method = "lm",se=FALSE)+
+  geom_point(stat= "identity", fill="blue")+
+  coord_flip()
 
 ```
 
