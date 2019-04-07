@@ -9,9 +9,11 @@ output: html_document
 knitr::opts_chunk$set(echo = TRUE)
 ## install and load the package tidyverse and janitor
 
-install.packages(c("tidyverse","janitor"))
+install.packages(c("tidyverse","janitor", "ggplot2","gridExtra"))
 library(tidyverse)
 library(janitor)
+library(ggplot2)
+library(gridExtra)
 ```
 
 *Note*: If you try to Knit this document at this time, you *will* get an error because there is code in this document that has to be edited (by you!) before it will be able to successfully knit!
@@ -111,9 +113,9 @@ gaming_no_na %>% group_by(publisher) %>%
   tally() %>% 
   top_n(10)   
 ```
-The top 10 publishers based off number of game sales are Activision, Electronic Arts, Konami Digial Entertainment, Namaco Bandi Games, Nintendo, Sega, Sony Computer Entertainment,Take-Two Interactive, THQ, and Ubisoft 
+The top 10 publishers based off number of game sales are Activision, Electronic Arts, Konami Digial Entertainment, Namaco Bandi Games, Nintendo, Sega, Sony Computer Entertainment,Take-Two Interactive, THQ, and Ubisoft. 
 
-What are the top 10 publishers by the global sales?
+What are the top 10 publishers by the global sales? The top 10 publishers for global sales are Activision, Electronic Arts, Konmai Digitial Entertainment, Mirosoft Game Studios, Nintento,Sega,Sony,Take-Two Interactive,THQ and Ubisoft
 
 ```{r}
 gaming_no_na %>% group_by(publisher) %>% 
@@ -124,7 +126,8 @@ gaming_no_na %>% group_by(publisher) %>%
 Create a horizontal bar plot using ggplot2 that on the Y axis shows the top 10 companies by overall global sales and on the X axis shows the total global sales. Which company sells the most globally?
 
 ```{r}
-ggplot(gaming_no_na) +
+ggplot(gaming_no_na,aes(x="global_sales",y= "publisher",top_n(10))) + 
+  geom_bar(stat="identity",fill="blue")
 
 ```
 
@@ -132,16 +135,14 @@ ggplot(gaming_no_na) +
 Use ggplot2 to create a line graph that shows the toal number of games released each year over time. Do you see any trend?
 
 ```{r}
-ggplot(gaming_no_na) +
-
+ggplot(gaming_no_na,aes(x=year_of_release,y=name)) + geom_line()
 ```
 
 
 Do the same graph above for the top 10 companies by global sales but group by the company.
 
 ```{r}
-ggplot(gaming_no_na) +
-
+ggplot(gaming_no_na,aes(x=global_sales,y=publisher,top_n(10))) + geom_line()
 
 ```
 
@@ -149,15 +150,13 @@ ggplot(gaming_no_na) +
 How about a bar plot that shows the global sales by genres? Which genre sells the most (dollar value)?
 
 ```{r}
-ggplot(gaming_no_na) +
-
+ggplot(gaming_no_na, aes(x=global_sales, y=genre)) + geom_bar(stat="identity", fill="yellow")
 ```
 
 Do the bar plot above but group them by market (Japan, Europe, North America). Do you see any difference between regions?
 
 ```{r}
-ggplot(gaming_no_na) +
-
+ggplot(gaming_no_na,aes(x=global_sales,y=)) + geom_bar(stat="identity", fill="green")
 ```
 
 Read the lesson on inferential analysis. We are using linear regression to find what factors determine the sales of a computer game. Use global sales as the dependent variables (Y) and genre, rating, and platform. Make sure to use genre and platform as factors.
