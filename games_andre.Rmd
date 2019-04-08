@@ -151,43 +151,49 @@ ggplot(games_per_year,aes(x=as.numeric(year_of_release),y=game_per_year)) + geom
 Do the same graph above for the top 10 companies by global sales but group by the company.
 
 ```{r}
-games_per_year<-gaming_no_na %>% 
+top_companies<-gaming_no_na %>% 
   group_by(publisher,year_of_release) %>% 
-  summarize(game_per_year=n()) 
+  summarize(total_sales=sum(global_sales))%>%
+  filter(publisher %in% top_10$publisher)
 
-ggplot(games_per_year,aes(x=as.numeric(year_of_release),y=game_per_year,group=as.numeric(year_of_release),color="random")) + geom_line()
+ggplot(top_companies,aes(x=as.numeric(year_of_release),y=total_sales,group=publisher,color=publisher)) + geom_line()
+
 ```
-
-```
-
 
 How about a bar plot that shows the global sales by genres? Which genre sells the most (dollar value)?
 
 ```{r}
 world_sales<-gaming_no_na %>% 
   group_by(genre) %>% 
-  summarize(sales=sum(global_sales)) 
+  summarize(sales=sum(global_sales))%>%
+  drop_na(genre)
 
-ggplot(world_sales, aes(x=genre, y=sales)) + geom_bar(stat="identity", fill="yellow")
+ggplot(world_sales, aes(x=reorder(genre,sales), y=sales)) + geom_bar(stat="identity", fill="yellow")
 ```
 
 Do the bar plot above but group them by market (Japan, Europe, North America). Do you see any difference between regions?
 
 ```{r}
-world_sales<-gaming_no_na %>% 
-  group_by() %>% 
-  summarize(sales=sum(global_sales)) 
+regional_sales<-gaming_no_na %>% 
+  group_by(genre) %>% 
+  summarize(sales_na=sum(na_sales),
+            sales_eu=sum(eu_sales),
+            sales_jp=sum(jp_sales))%>%
+  drop_na(genre)
 
-ggplot(world_sales, aes(x=, y=sales)) + geom_bar(stat="identity", fill="yellow")
+na<-ggplot(regional_sales, aes(x=reorder(genre,sales_na), y=sales_na)) + geom_bar(stat="identity", fill="yellow")
+
+eu<-ggplot(regional_sales, aes(x=reorder(genre,sales_eu), y=sales_eu)) + geom_bar(stat="identity", fill="yellow")
+
+jp<-ggplot(regional_sales, aes(x=reorder(genre,sales_jp), y=sales_jp)) + geom_bar(stat="identity", fill="yellow")
+
+grid.arrange(na,eu,jp,ncol=2)
 ```
 
 Read the lesson on inferential analysis. We are using linear regression to find what factors determine the sales of a computer game. Use global sales as the dependent variables (Y) and genre, rating, and platform. Make sure to use genre and platform as factors.
 
 ```{r}
-ggplot(gaming_no_na,aes(x=global_sales,y=))+ geom_smooth(method = "lm",se=FALSE)+
-  geom_point(stat= "identity", fill="blue")+
-  coord_flip()
-
+ 
 ```
 
 
