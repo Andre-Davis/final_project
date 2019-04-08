@@ -9,7 +9,6 @@ output: html_document
 knitr::opts_chunk$set(echo = TRUE)
 ## install and load the package tidyverse and janitor
 
-install.packages(c("tidyverse","janitor", "ggplot2","gridExtra"))
 library(tidyverse)
 library(janitor)
 library(ggplot2)
@@ -76,6 +75,7 @@ The purpose of this project is to explore the development of the video game indu
 
 Load the data into a data frame called `gaming`. Make sure you clean the column names so you remove all the caps and spaces in the names. What package do you need to use?
 
+
 ```{r}
 gaming <- read_csv("data/tidy_data/Video_Games_Sales_as_at_22_Dec_2016.csv") %>% 
   clean_names()
@@ -84,6 +84,7 @@ gaming
 
 what are the columns in the data? How many observations are in the data? Write your code in the chunk below.
 
+ 
 ```{r}
 colnames(gaming)
 
@@ -91,6 +92,7 @@ colnames(gaming)
 
 There might be some missing values in the data. Remove all the missing values from the data and calling the new data frame `gaming_no_na`.
 
+ 
 ```{r}
 gaming_no_na <- gaming %>% drop_na()
 ```
@@ -107,8 +109,11 @@ The column `publisher` has values such as *Sony Computer Entertainment*, *Sony C
 sony <- c("Sony Computer Entertainment","Sony Computer Entertainment America","Sony Computer Entertainment Europe","Sony Music Entertainment","Sony Online Entertainment")
 
 gaming_no_na <- gaming %>% mutate(publisher = ifelse(publisher %in% sony , "Sony", publisher)) 
+
+
 ```
 What are the top 10 publishers by the number of games they produce?
+
 
 ```{r}
 gaming_no_na %>% group_by(publisher) %>% 
@@ -132,7 +137,7 @@ Create a horizontal bar plot using ggplot2 that on the Y axis shows the top 10 c
 ```{r}
   
 ggplot(top_10,aes(x=reorder(publisher,total_sales),y=total_sales)) + 
-  geom_bar(stat="identity",fill="blue") + coord_flip()
+  geom_bar(stat="identity",fill="blue")+ labs(x="publisher",y="USD") + coord_flip()
 ```
 
 
@@ -143,7 +148,7 @@ games_per_year<-gaming_no_na %>%
   group_by(year_of_release) %>% 
   summarize(game_per_year=n()) 
 
-ggplot(games_per_year,aes(x=as.numeric(year_of_release),y=game_per_year)) + geom_line()
+ggplot(games_per_year,aes(x=as.numeric(year_of_release),y=game_per_year))+ labs(x = "year of release",y="games per year") + geom_line()
 
 ```
 
@@ -156,8 +161,7 @@ top_companies<-gaming_no_na %>%
   summarize(total_sales=sum(global_sales))%>%
   filter(publisher %in% top_10$publisher)
 
-ggplot(top_companies,aes(x=as.numeric(year_of_release),y=total_sales,group=publisher,color=publisher)) + geom_line()
-
+ggplot(top_companies,aes(x=as.numeric(year_of_release),y=total_sales,group=publisher,color=publisher))+ labs(x = "year of release",y="total sales")+ geom_line()
 ```
 
 How about a bar plot that shows the global sales by genres? Which genre sells the most (dollar value)?
@@ -168,7 +172,7 @@ world_sales<-gaming_no_na %>%
   summarize(sales=sum(global_sales))%>%
   drop_na(genre)
 
-ggplot(world_sales, aes(x=reorder(genre,sales), y=sales)) + geom_bar(stat="identity", fill="yellow")
+ggplot(world_sales, aes(x=reorder(genre,sales), y=sales))+ labs(x ="genre",y="sales USD") + geom_bar(stat="identity", fill="yellow")
 ```
 
 Do the bar plot above but group them by market (Japan, Europe, North America). Do you see any difference between regions?
@@ -181,11 +185,11 @@ regional_sales<-gaming_no_na %>%
             sales_jp=sum(jp_sales))%>%
   drop_na(genre)
 
-na<-ggplot(regional_sales, aes(x=reorder(genre,sales_na), y=sales_na)) + geom_bar(stat="identity", fill="yellow")
+na<-ggplot(regional_sales, aes(x=reorder(genre,sales_na), y=sales_na))+ labs(x = "genre",y="north america sales") + geom_bar(stat="identity", fill="yellow")
 
-eu<-ggplot(regional_sales, aes(x=reorder(genre,sales_eu), y=sales_eu)) + geom_bar(stat="identity", fill="yellow")
+eu<-ggplot(regional_sales, aes(x=reorder(genre,sales_eu), y=sales_eu))+ labs(x = "genre",y="europe sales") + geom_bar(stat="identity", fill="yellow")
 
-jp<-ggplot(regional_sales, aes(x=reorder(genre,sales_jp), y=sales_jp)) + geom_bar(stat="identity", fill="yellow")
+jp<-ggplot(regional_sales, aes(x=reorder(genre,sales_jp), y=sales_jp))+ labs(x = "genre",y="japan sales") + geom_bar(stat="identity", fill="yellow")
 
 grid.arrange(na,eu,jp,ncol=2)
 ```
@@ -193,7 +197,8 @@ grid.arrange(na,eu,jp,ncol=2)
 Read the lesson on inferential analysis. We are using linear regression to find what factors determine the sales of a computer game. Use global sales as the dependent variables (Y) and genre, rating, and platform. Make sure to use genre and platform as factors.
 
 ```{r}
- 
+regression<-lm(global_sales~factor(genre)+rating+factor(platform),data=gaming_no_na)
+regression
 ```
 
 
